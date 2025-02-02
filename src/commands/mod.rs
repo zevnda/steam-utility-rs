@@ -3,7 +3,9 @@ mod idle;
 mod stats;
 mod users;
 
-pub use achievements::{lock_achievement, lock_all_achievements, unlock_achievement};
+pub use achievements::{
+    lock_achievement, lock_all_achievements, toggle_achievement, unlock_achievement,
+};
 
 pub use idle::idle;
 pub use stats::{reset_all_stats, update_stat};

@@ -1,8 +1,8 @@
 mod commands;
 
 use commands::{
-    get_users, idle, lock_achievement, lock_all_achievements, reset_all_stats, unlock_achievement,
-    update_stat,
+    get_users, idle, lock_achievement, lock_all_achievements, reset_all_stats, toggle_achievement,
+    unlock_achievement, update_stat,
 };
 
 use std::env;
@@ -30,6 +30,10 @@ const COMMANDS: &[Command] = &[
     Command {
         name: "lock_achievement",
         usage: "lock_achievement <app_id> <achievement_id>",
+    },
+    Command {
+        name: "toggle_achievement",
+        usage: "toggle_achievement <app_id> <achievement_id>",
     },
     Command {
         name: "lock_all_achievements",
@@ -123,6 +127,16 @@ fn main() {
             let app_id = args[2].parse::<u32>().expect("Invalid app_id");
             let achievement_id = args[3].clone();
             lock_achievement(app_id, &achievement_id);
+        }
+        "toggle_achievement" => {
+            if args.len() < 4 {
+                eprintln!("Usage: SteamUtility.exe toggle_achievements <app_id> <achievement_id>");
+                wait_for_enter();
+                process::exit(1);
+            }
+            let app_id = args[2].parse::<u32>().expect("Invalid app_id");
+            let achievement_id = args[3].clone();
+            toggle_achievement(app_id, &achievement_id);
         }
         "lock_all_achievements" => {
             if args.len() < 3 {

@@ -4,47 +4,51 @@ use std::time::Duration;
 // Update a stat for a game
 pub fn update_stat(app_id: u32, stat_name: &str, value: i32) {
     // Initialize the Steam client
-    let (client, _single) = init_steam_client(app_id).expect("Failed to initialize Steam client");
+    if let Ok((client, _single)) = init_steam_client(app_id) {
+        let user_stats = client.user_stats();
+        user_stats.request_current_stats();
 
-    let user_stats = client.user_stats();
-    user_stats.request_current_stats();
+        // Wait for the stats to be requested
+        std::thread::sleep(Duration::from_millis(500));
 
-    // Wait for the stats to be requested
-    std::thread::sleep(Duration::from_millis(500));
+        let mut success = false;
 
-    // Update the stat
-    if let Ok(_) = user_stats.set_stat_i32(stat_name, value) {
-        println!("Updated stat: {} = {}", stat_name, value);
+        // Update the stat
+        if user_stats.set_stat_i32(stat_name, value).is_ok() {
+            success = true;
+        }
+
+        // Store the updated stats
+        if user_stats.store_stats().is_ok() && success {
+            println!("{{\"success\":\"Successfully updated stat\"}}");
+        } else {
+            println!("{{\"error\":\"Failed to update stat\"}}");
+        }
     } else {
-        println!("Failed to update stat: {} = {}", stat_name, value);
-    }
-
-    // Store the updated stats
-    if let Ok(_) = user_stats.store_stats() {
-        println!("Stored stats");
-    } else {
-        println!("Failed to store stats");
+        println!("{{\"fail\":\"Failed to initialize Steam client\"}}");
     }
 }
 
 // Reset all stats for a game
 pub fn reset_all_stats(app_id: u32) {
     // Initialize the Steam client
-    let (client, _single) = init_steam_client(app_id).expect("Failed to initialize Steam client");
+    if let Ok((client, _single)) = init_steam_client(app_id) {
+        let user_stats = client.user_stats();
 
-    let user_stats = client.user_stats();
+        let mut success = false;
 
-    // Reset all stats
-    if let Ok(_) = user_stats.reset_all_stats(false) {
-        println!("All stats reset");
+        // Reset all stats
+        if user_stats.reset_all_stats(false).is_ok() {
+            success = true;
+        }
+
+        // Store the updated stats
+        if user_stats.store_stats().is_ok() && success {
+            println!("{{\"success\":\"Successfully reset all stats\"}}");
+        } else {
+            println!("{{\"error\":\"Failed to reset all stats\"}}");
+        }
     } else {
-        println!("Failed to reset all stats");
-    }
-
-    // Store the updated stats
-    if let Ok(_) = user_stats.store_stats() {
-        println!("Stored stats");
-    } else {
-        println!("Failed to store stats");
+        println!("{{\"fail\":\"Failed to initialize Steam client\"}}");
     }
 }
