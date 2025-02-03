@@ -77,7 +77,7 @@ extern "system" fn window_proc(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LP
 }
 
 // Idle the game and display its header image in the window
-pub fn idle(app_id: u32) {
+pub fn idle(app_id: u32, quiet: bool) {
     init_steam_client(app_id).expect("Failed to initialize Steam client");
 
     // Download the game's header image

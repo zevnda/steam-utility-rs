@@ -21,7 +21,7 @@ const COMMANDS: &[Command] = &[
     },
     Command {
         name: "idle",
-        usage: "idle <app_id>",
+        usage: "idle <app_id> <quiet>",
     },
     Command {
         name: "unlock_achievement",
@@ -100,13 +100,14 @@ fn main() {
             get_users();
         }
         "idle" => {
-            if args.len() < 3 {
-                eprintln!("Usage: SteamUtility.exe idle <app_id>");
+            if args.len() < 4 {
+                eprintln!("Usage: SteamUtility.exe idle <app_id> <quiet>");
                 wait_for_enter();
                 process::exit(1);
             }
             let app_id = args[2].parse::<u32>().expect("Invalid app_id");
-            idle(app_id);
+            let quiet = args[3].parse::<bool>().expect("Invalid quiet");
+            idle(app_id, quiet);
         }
         "unlock_achievement" => {
             if args.len() < 4 {
